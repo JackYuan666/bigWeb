@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+    <style type="text/css">
+      #container {
+        width: 100%;
+        height: 690px;
+        margin: 1px auto;
+        background: black;
+        border: 2px solid red;
+        /*给烟花做一个相对定位*/
+        position: relative;
+        cursor: pointer;
+        /*当烟花炸出超过黑屏时,覆盖不显示*/
+        overflow: hidden;
+      }
+      .fire {
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        /*让主题烟花初始定位在黑框底部,为后面上天做铺垫*/
+        bottom: 0;
+      }
+      .small-fire {
+        width: 10px;
+        height: 10px;
+        /*设置成圆*/
+        border-radius: 50%;
+        position: absolute;
+      }
+      #content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        /* width: 250px; */
+        text-align: center;
+        line-height: 100px;
+        font-size: 30px;
+        height: 100px;
+        font-weight: 700;
+        color: aliceblue;
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="content">中原第一,天下无双</div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    //		一.主题烟花
+    class Fire {
+      //			1.构造函数
+      constructor(pos) {
+        //				2.获取黑框元素
+        this.cont = document.getElementById("container");
+        //              5.因为坐标传给了new的方法，那么constructor负责接收（接收到的是一个对象）
+        //                接收对象之后，直接把里面的键值对解析给this，方便在后续方法中使用
+        this.x = pos.x;
+        this.y = pos.y;
+      }
+      //			3.创建主题烟花
+      create() {
+        //				3.1创建主题烟花this.f
+        this.f = document.createElement("div");
+        //				3.2获取其样式
+        this.f.className = "fire";
+        //				3.3通过颜色随机函数为其随机个颜色吧
+        this.f.style.background = randomColor();
+        //				3.4把其赋给黑框
+        this.cont.appendChild(this.f);
+        //              5.烟花出现位置为鼠标点击所对应x轴的位置
+        this.f.style.left = this.x + "px";
+        //              7.让其创建后进行运动
+        this.fireMove();
+      }
+      //			6.让主题烟花上升到我们鼠标点击的高度
+      //           运用到的运动封装函数,第一个参数传的是元素,第二个元素是需要运动属性和运动到的目标位置,第三个为新的函数
+      fireMove() {
+        move2(
+          this.f,
+          {
+            top: this.y,
+          },
+          () => {
+            //            		刚分析到让主题烟花进行运动后,要消失掉,展现出小烟花炸开的效果
+            //                  8.移除主题烟花实例
+            this.f.remove();
+            //                  9.准备小烟花实例，并给其随机设置个数（10个到20个之间）（因为炸开需要很多个才有炸开的效果）
+            var randomNum = random(10, 20);
+            //                  10. 创建小烟花实例的同时,把需要的信息传过去,方便使用
+            for (var i = 0; i < randomNum; i++) {
+              //                  	把信息传参传过去
+              var sf = new smallFire({
+                //                  		cont:黑框,x:left距离（坐标）,y:top距离（坐标）
+                cont: this.cont,
+                x: this.x,
+                y: this.y,
+              });
+              //                  	11.并为其执行创建方法
+              sf.create();
+            }
+          }
+        );
+      }
+    }
+    //		二.小烟花
+    class smallFire {
+      //        	12.通过接受参数,并对对象进行解析,拿到需要的信息,方便使用
+      constructor(obj) {
+        this.cont = obj.cont;
+        this.x = obj.x;
+        this.y = obj.y;
+      }
+      //        	13.小烟花的创建
+      create() {
+        //          13.1 创建小烟花的元素，获取样式，并且获取其坐标。
+        this.f = document.createElement("div");
+        this.f.className = "small-fire";
+        this.f.style.background = randomColor();
+        this.cont.appendChild(this.f);
+        this.f.style.left = this.x + "px";
+        this.f.style.top = this.y + "px";
+        //          15.让其创建完毕后就直接运动
+        this.smallMove();
+      }
+      //        	14.小烟花的移动
+      smallMove() {
+        // 因为要做自由落体效果，所以，小烟花的运动不适合使用曾经的缓冲运动（运动的封装函数）
+        // 适合加速运动
+        // 所以不能直接使用运动的封装函数，需要重新写
+
+        // 计算随机的步长
+        var speedX = random(-10, 10);
+        var speedY = random(-20, 0);
+        // 开启计时器
+        this.f.t = setInterval(() => {
+          // 因为是自由落体，判断元素是否超过了大框
+          if (this.f.offsetTop > this.cont.offsetHeight) {
+            // 超出了，清除计时器，删除对应小烟花
+            clearInterval(this.f.t);
+            this.f.remove();
+          } else {
+            // 没有超出，正常根据步长移动
+            this.f.style.left = this.f.offsetLeft + speedX + "px";
+            // 过程中，将Y的步长，不断的增大，造成重力加速效果
+            this.f.style.top = this.f.offsetTop + speedY++ + "px";
+          }
+        }, 30);
+      }
+    }
+    //		4.
+    var ocont = document.getElementById("container");
+    function shutFire(eve) {
+      //			4.1定义事件对象
+      // var e = eve || event;
+      //			4.2获取坐标为后面烟花做准备(主题烟花生成的坐标范围)
+      // var x = e.pageX - this.offsetLeft;
+      // var y = e.pageY - this.offsetTop;
+      var x = random(100, 600);
+      var y = random(10, 600);
+      //			4.3创建一个烟花元素,并且把上面坐标通过传参的方式给传过去,方便使用
+      var f = new Fire({
+        x: x,
+        y: y,
+      });
+      //			4.4执行创建烟花的方法
+      f.create();
+    }
+    // 随机放烟花
+    setInterval((eve) => {
+      shutFire();
+    }, 3000);
+
+    //	随机数封装函数
+    function random(min, max) {
+      return Math.round(Math.random() * (max - min + 1) + min);
+    }
+    //	随机颜色值封装函数
+    function randomColor() {
+      return `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`;
+    }
+    //	运动过程封装函数
+    function move2(ele, obj, cb) {
+      clearInterval(ele.t);
+      ele.t = setInterval(() => {
+        // 假设状态为：可以清除计时器
+        var i = true;
+        // 因为在计时器中才开始使用到对象中的信息，所以在计时器中遍历
+        // 并提前换来的属性和目标变量
+        for (var attr in obj) {
+          if (attr == "opacity") {
+            var iNow = getStyle(ele, attr) * 100;
+          } else {
+            var iNow = parseInt(getStyle(ele, attr));
+          }
+
+          let speed = (obj[attr] - iNow) / 10;
+          speed = speed < 0 ? Math.floor(speed) : Math.ceil(speed);
+          // 只要有一个属性到目标，就停了，不对
+          // 必须所有属性到目标，才能停
+
+          // 只要有一个属性没到目标，绝对不能停
+          // 用状态来标记到底要不要停止计时器
+
+          // 只要有一个属性没到目标：绝对不能清除计时器
+          if (iNow !== obj[attr]) {
+            i = false;
+          }
+          if (attr == "opacity") {
+            ele.style.opacity = (iNow + speed) / 100;
+          } else {
+            ele.style[attr] = iNow + speed + "px";
+          }
+        }
+        // 如果每次计时器执行结束，所有属性都执行了一遍之后，状态还是true，表示，没有被改成false，如果没有被改成false，表示没有属性没到终点，那么状态还是false就不清除
+        if (i) {
+          clearInterval(ele.t);
+          // 用户决定在动画结束时要执行的功能，万一用户没传参，做个默认判断
+          if (cb) {
+            cb();
+          }
+          // cb && cb();
+        }
+      }, 20);
+    }
+    // 获取非行内样式的兼容：必然会得到当前的样式值(获取样式封装函数)
+    function getStyle(ele, attr) {
+      if (ele.currentStyle) {
+        return ele.currentStyle[attr];
+      } else {
+        return getComputedStyle(ele, false)[attr];
+      }
+    }
+    // 让中间的文字闪烁
+    function blink() {
+      var color = "#FF00FF,#FF00CC,#FF0099,#FF0066,#FF0033,#FF0000,,#FF0001";
+      color = color.split(",");
+      document.getElementById("content").style.color =
+        color[parseInt(Math.random() * color.length)];
+      setTimeout(() => {
+        clearInterval(timer1);
+        shark();
+      }, 3000);
+    }
+    timer1 = setInterval("blink()", 200);
+    // 让中间的文字逐渐淡化
+
+    function shark() {
+      let opacity = 1;
+      let timer2;
+      timer2 = setInterval(sub, 100);
+      function sub() {
+        opacity -= 0.05;
+        console.log(opacity);
+        document.getElementById("content").style.opacity = opacity;
+        if (opacity <= 0) {
+          clearInterval(timer2);
+          console.log("没有呢");
+        }
+      }
+    }
+  </script>
+</html>
