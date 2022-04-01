@@ -30,18 +30,18 @@
   </head>
 
   <div id="main">
-    <div>大原</div>
-    <div>小原锅</div>
-    <div>原锅</div>
-    <div>numberOne</div>
-    <div>看看</div>
-    <div>谁呀</div>
-    <div>mygod</div>
-    <div>呵呵呵</div>
-    <div>中原</div>
-    <div>小小猿</div>
-    <div>小原</div>
-    <div>请叫我小原哥，谢谢！</div>
+    <div class="one">大原</div>
+    <div class="one">小原锅</div>
+    <div class="one">原锅</div>
+    <div class="one">numberOne</div>
+    <div class="one">看看</div>
+    <div class="one">谁呀</div>
+    <div class="one">mygod</div>
+    <div class="one">呵呵呵</div>
+    <div class="one">中原</div>
+    <div class="one">小小猿</div>
+    <div class="one">小原</div>
+    <div class="one">请叫我小原哥，谢谢！</div>
   </div>
   <script>
     var main = document.getElementById("main");
@@ -173,5 +173,28 @@
       move(json[i]);
     }
     // 随机生成颜色的函数
+    function randomColor(max, min) {
+      let r = Math.floor(Math.random() * (max - min - 1) + min);
+      let g = Math.floor(Math.random() * (max - min - 1) + min);
+      let b = Math.floor(Math.random() * (max - min - 1) + min);
+      return `rgb(${r},${g},${b})`;
+    }
+    // 随机挑选小球，给他们添加样式
+    function randomSelect() {
+      // 1.先获取所有的div
+      let [...divs] = document.getElementsByClassName("one");
+      divs.forEach((item) => {
+        item.style.backgroundColor = `${randomColor(1, 255)}`;
+        item.style.color = `${randomColor(1, 255)}`;
+        item.style.fontSize = `${Math.floor(
+          Math.random() * (55 - 10 - 1) + 10
+        )}px`;
+      });
+      return divs;
+    }
+    // 定时器
+    setInterval(() => {
+      randomSelect();
+    }, 2000);
   </script>
 </html>
