@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>call me xiaoyuanguo</title>
     <style>
+      body {
+        background-color: black;
+      }
       * {
         margin: 0;
         padding: 0;
@@ -15,10 +18,10 @@
       #main div {
         overflow: hidden;
         position: absolute;
-        width: 200px;
-        line-height: 200px;
-        height: 200px;
-        opacity: 0.5;
+        width: 130px;
+        line-height: 130px;
+        height: 130px;
+        /* opacity: 0.5; */
         -moz-border-radius: 50%;
         -webkit-border-radius: 50%;
         border-radius: 50%;
@@ -26,10 +29,27 @@
         font-size: larger;
         font-weight: 700;
       }
+      .lock {
+        display: block;
+        width: 60px;
+        height: 30px;
+        line-height: 30px;
+        position: absolute;
+        text-align: center;
+        border-radius: 30px;
+        right: 30px;
+        top: 10px;
+        font-weight: 700;
+        background-color: aliceblue;
+      }
+      .lock:hover {
+        cursor: pointer;
+      }
     </style>
   </head>
 
   <div id="main">
+    <span class="lock">开关</span>
     <div class="one">大原</div>
     <div class="one">小原锅</div>
     <div class="one">原锅</div>
@@ -42,6 +62,10 @@
     <div class="one">小小猿</div>
     <div class="one">小原</div>
     <div class="one">请叫我小原哥，谢谢！</div>
+    <div class="one">原神</div>
+    <div class="one">社会原</div>
+    <div class="one">社会人</div>
+    <div class="one">大王</div>
   </div>
   <script>
     var main = document.getElementById("main");
@@ -187,7 +211,7 @@
         item.style.backgroundColor = `${randomColor(1, 255)}`;
         item.style.color = `${randomColor(1, 255)}`;
         item.style.fontSize = `${Math.floor(
-          Math.random() * (55 - 10 - 1) + 10
+          Math.random() * (40 - 9 - 1) + 10
         )}px`;
       });
       return divs;
@@ -196,5 +220,21 @@
     setInterval(() => {
       randomSelect();
     }, 2000);
+    // 开关
+    let lock = document.getElementsByClassName("lock")[0];
+    let flag = true;
+    lock.onclick = function () {
+      if (flag) {
+        lock.style.backgroundColor = "black";
+        lock.style.color = "white";
+        document.body.style.backgroundColor = "aliceblue";
+        flag = false;
+      } else {
+        lock.style.backgroundColor = "white";
+        lock.style.color = "black";
+        document.body.style.backgroundColor = "black";
+        flag = true;
+      }
+    };
   </script>
 </html>
